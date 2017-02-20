@@ -1,38 +1,14 @@
 library(dplyr)
 library(xlsx)
 
-# Original
-allzips <- readRDS("superzip.rds")
-allzips$latitude <- jitter(allzips$latitude)
-allzips$longitude <- jitter(allzips$longitude)
-allzips$college <- allzips$college * 100
-allzips$zipcode <- formatC(allzips$zipcode, width=5, format="d", flag="0")
-row.names(allzips) <- allzips$zipcode
+# Data preprocessing
 
-cleantable <- allzips %>%
-  select(
-    City = city.x,
-    State = state.x,
-    Zipcode = zipcode,
-    Rank = rank,
-    Score = centile,
-    Superzip = superzip,
-    Population = adultpop,
-    College = college,
-    Income = income,
-    Lat = latitude,
-    Long = longitude
-  )
-
-# My data
-
-data09 <- read.csv("../data/selected_MERGED2009_10_PP.csv", header = T)
-data14 <- read.csv("../data/selected_MERGED2014_15_PP.csv", header = T)
+dataOriginal <- read.csv("../output/newest_data.csv", header = T)
 
 # preprocess data
-data14$OTHERS = data14$UGDS_ASIAN + data14$UGDS_AIAN  + data14$UGDS_NHPI + data14$UGDS_UNKN + data14$UGDS_2MOR
+dataOriginal$OTHERS = dataOriginal$UGDS_ASIAN + dataOriginal$UGDS_AIAN  + dataOriginal$UGDS_NHPI + dataOriginal$UGDS_UNKN + dataOriginal$UGDS_2MOR
 
-dataRecent <- data14 %>%
+dataRecent <- dataOriginal %>%
   select(
     UID = UNITID,
     Name = INSTNM,
