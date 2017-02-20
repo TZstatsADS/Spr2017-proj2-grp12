@@ -16,7 +16,6 @@ library(dplyr)
 
 # - My data
 
-
 function(input, output, session) {
 
   ## Interactive Map ###########################################
@@ -92,7 +91,7 @@ function(input, output, session) {
     
     leafletProxy("map", data = dataRecent) %>%
       clearShapes() %>%
-      addCircles(~Long, ~Lat, radius=1000, layerId=~UID,
+      addCircles(~Long, ~Lat, radius=750, layerId=~UID,
         stroke=FALSE, fillOpacity=0.4)#, fillColor=pal(colorData)) %>%  (colors to do)
       #addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
       #  layerId="colorLegend")
@@ -103,6 +102,7 @@ function(input, output, session) {
     # if it is a city, zoom to view with all universities
     if (input$zoom %in% cities){
       coords <- dataRecent[dataRecent$City==input$zoom,c(5,6)]
+      center <- apply(coords, 2, mean)
     }
       
   )
