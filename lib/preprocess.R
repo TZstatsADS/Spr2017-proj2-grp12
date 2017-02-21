@@ -45,7 +45,7 @@ new_df <- target%>%select(UNITID,MD_FAMINC)%>%inner_join((ref_tgt%>%select(UNITI
 new_df$value_added <- new_df$MD_EARN_WNE_P6/new_df$MD_FAMINC
 is.na(new_df$value_added) <- do.call(cbind,lapply(new_df$value_added, is.infinite))#replace Inf with NA
 target <- target%>%left_join((new_df%>%select(UNITID,value_added)))
-write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+#write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
 
 # compute diversity 
 standard.ratio <- c(WHITE=0.637,Black=0.122,HISP=0.163,AIAN=0.007,ASIAN=0.047,NHPI=0.0015,NRA=0.0625,WOMEN=0.5)
@@ -53,7 +53,7 @@ target <- target%>%mutate_each(funs(as.character),c(UGDS_WHITE:UGDS_NHPI,UGDS_NR
 target <- target%>%mutate_each(funs(as.numeric),c(UGDS_WHITE:UGDS_NHPI,UGDS_NRA,UGDS_WOMEN))
 target$diversity<-1/(target%>%select(c(UGDS_WHITE:UGDS_NHPI,UGDS_NRA,UGDS_WOMEN))%>%sweep(2,standard.ratio,'/')%>%sweep(2,1,'-')%>%sweep(2,2,'^')%>%rowSums())
 target$diversity <- (target$diversity - min(target$diversity))/(max(target$diversity-min(target$diversity)))
-write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+#write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
 
 # compute new variable as is.major
 target <- fread('Spr2017-proj2-grp12/output/newest_data.csv')
