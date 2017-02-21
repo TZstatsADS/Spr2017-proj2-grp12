@@ -23,20 +23,20 @@ navbarPage("Find your college", id="nav",
       
       fluidRow(style = "padding-bottom: 0px; margin-top: 20px; margin-left: 10px;margin-right: 10px;",
                column(1, selectizeInput('stateFrom', 'Original state',
-                                     choices = levels(factor(dataRecent$State)) )),
-               column(1, selectizeInput(
+                                     choices = c("",levels(factor(dataRecent$State))), selected="")),
+               column(2, selectizeInput(
                  'stateTo', 'States accepted', choices = levels(factor(dataRecent$State)), multiple = TRUE)),
-               column(2, sliderInput("tuitionsUser", label = "Tuitions", min = 0, 
-                                     max = 2000, value = c(10, 1500)) ),
+               column(2, sliderInput("tuitionsUser", label = "Tuitions (by term)", min = 0, 
+                                     max = 60000, value = c(1, 60000)) ),
                column(3, selectizeInput("majors", "Majors", choices = majors, multiple=TRUE)),
                column(2, checkboxGroupInput("admRates", label = "Selectivity of schools", 
-                                             choices = list("Elistist" = 0.15, "Competitive" = 0.30, "Midrange" = 0.5, "Last half" = 1),
-                                             selected = c(0.15,0.30)) ),
-               column(3, selectizeInput('zoom', 'Look for City or University',
-                                     choices = c(cities, universities)))
+                                             choices = list("Elitist" = 1, "Competitive" = 2, "Midrange" = 3, "Last half" = 4),
+                                             selected = 1:4 ) ),
+               column(2, selectizeInput('zoom', 'Look for City or University',
+                                     choices = c("",cities, universities), selected=""))
       ),
 
-      leafletOutput("map", width="100%", height="100%"),
+      leafletOutput("map", width="100%", height="80%"),
       
       # Absolute panel (to do)
       # Shiny versions prior to 0.11 should use class="modal" instead.
@@ -58,38 +58,17 @@ navbarPage("Find your college", id="nav",
       # ),
 
       tags$div(id="cite",
-        'Data compiled for ', tags$em('Coming Apart: The State of White America, 1960???2010'), ' by Charles Murray (Crown Forum, 2012).'
+        'Data compiled from ', tags$em('https://collegescorecard.ed.gov/'), ' by Jingwen, Vic, Virgile, Zhishan and Ziwei  (Columbia University, 2017).'
       )
     )
   ),
 
-  # tabPanel("Data explorer",
-  #   fluidRow(
-  #     column(3,
-  #       selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
-  #     ),
-  #     column(3,
-  #       conditionalPanel("input.states",
-  #         selectInput("cities", "Cities", c("All cities"=""), multiple=TRUE)
-  #       )
-  #     ),
-  #     column(3,
-  #       conditionalPanel("input.states",
-  #         selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
-  #       )
-  #     )
-  #   ),
-  #   fluidRow(
-  #     column(1,
-  #       numericInput("minScore", "Min score", min=0, max=100, value=0)
-  #     ),
-  #     column(1,
-  #       numericInput("maxScore", "Max score", min=0, max=100, value=100)
-  #     )
-  #   ),
-  #   hr(),
-  #   DT::dataTableOutput("ziptable")
-  # ),
+  tabPanel("Data explorer",
+    fluidRow(
+      column(3,
+        selectInput("test", "Example of input", c("1","2","3"), multiple=TRUE)
+      ))
+  ),
 
   conditionalPanel("false", icon("crosshair"))
 )

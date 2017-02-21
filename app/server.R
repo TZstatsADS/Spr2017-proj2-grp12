@@ -33,16 +33,38 @@ function(input, output, session) {
 
   # A reactive expression that returns the set of zips that are
   # in bounds right now
-  dataInBounds <- reactive({
-    if (is.null(input$map_bounds))
-      return(zipdata[FALSE,])
-    bounds <- input$map_bounds
-    latRng <- range(bounds$north, bounds$south)
-    lngRng <- range(bounds$east, bounds$west)
-
-    subset(dataRecent,
-      Lat >= latRng[1] & Lat <= latRng[2] &
-        Long >= lngRng[1] & Long <= lngRng[2])
+  # dataInBounds <- reactive({
+  #   if (is.null(input$map_bounds))
+  #     return(dataRecent[FALSE,])
+  #   bounds <- input$map_bounds
+  #   latRng <- range(bounds$north, bounds$south)
+  #   lngRng <- range(bounds$east, bounds$west)
+  # 
+  #   subset(dataRecent,
+  #     Lat >= latRng[1] & Lat <= latRng[2] &
+  #       Long >= lngRng[1] & Long <= lngRng[2])
+  # })
+  
+  filteredData <- reactive({
+    res <- dataRecent
+    # apply in-state tuition if not international student
+    if (input$stateFrom!=""){
+      # if not international, then apply rate of state from
+      res$Cost[res$State==input$stateFrom] <- res$TuitionIN[res$State==input$stateFrom]
+    }
+    # filter states of uni
+    if (!is.null(input$stateTo)){
+      res <- res %>% filter(State %in% input$stateTo)
+    }
+    # filter majors
+    if (!is.null(input$majors)){
+      maj <- apply(matrix(which(majors %in% input$majors)),1,function(x)paste("MAJPER",x))
+      res <- res[res[,maj]!=0,]
+    }
+    
+    # filter tuitions fees and admission rates 
+    res %>% filter(Cost>input$tuitionsUser[1],Cost<input$tuitionsUser[2],
+                   ((1 %in% input$admRates) & AdmRate<adm_rate_th[1]) | ((2 %in% input$admRates) & AdmRate<adm_rate_th[2] & AdmRate>=adm_rate_th[1]) | ((3 %in% input$admRates) & AdmRate<adm_rate_th[3] & AdmRate>=adm_rate_th[2]) | ((4 %in% input$admRates) & AdmRate<1 & AdmRate>=adm_rate_th[3]))
   })
 
   # Precalculate the breaks we'll need for the two histograms
@@ -89,7 +111,7 @@ function(input, output, session) {
   #   input$threshold), 30000, 3000) } else { radius <- zipdata[[sizeBy]] /
   #   max(zipdata[[sizeBy]]) * 30000 }
     
-    leafletProxy("map", data = dataRecent) %>%
+    leafletProxy("map", data = filteredData()) %>%
       clearShapes() %>%
       addCircles(~Long, ~Lat, radius=750, layerId=~UID,
         stroke=FALSE, fillOpacity=0.4)#, fillColor=pal(colorData)) %>%  (colors to do)
@@ -100,11 +122,34 @@ function(input, output, session) {
   # This observer allow to zoom to a specific city or a university
   observe(
     # if it is a city, zoom to view with all universities
-    if (input$zoom %in% cities){
-      coords <- dataRecent[dataRecent$City==input$zoom,c(5,6)]
-      center <- apply(coords, 2, mean)
+    if ( input$zoom!="" && input$zoom %in% cities){
+      coords <- filteredData()[filteredData()$City==input$zoom,c(1,5,6)]
+      anti_coords <- filteredData()[filteredData()$City!=input$zoom,c(1,5,6)]
+      # if group of universities
+      if (dim(coords)[1]!=1){
+        range <- as.numeric(apply(coords[2:3],2,FUN=function(x)diff(range(x))))/5
+        leafletProxy("map", data = filteredData()) %>%
+        fitBounds(min(coords$Long)-range[1], min(coords$Lat)-range[2], max(coords$Long)+range[1], max(coords$Lat)+range[2])  
+      }
+      # if one university in city
+      else{
+        leafletProxy("map", data = filteredData()) %>% 
+        setView(lng=coords$Long, lat=coords$Lat, zoom=13)  
+      }
+      # update map
+      leafletProxy("map", data = filteredData()) %>% clearShapes() %>%
+      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=750, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
+      addCircles(~coords$Long, ~coords$Lat, radius=750, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
     }
-      
+    # if a university is selected
+    else if ( input$zoom!="" && input$zoom %in% universities){
+      coords <- filteredData()[filteredData()$Name==input$zoom,c(1,5,6)]
+      anti_coords <- filteredData()[filteredData()$Name!=input$zoom,c(1,5,6)]
+      leafletProxy("map", data = filteredData())  %>% 
+      setView(lng=coords$Long, lat=coords$Lat, zoom=13) %>% clearShapes() %>%
+      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=750, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
+      addCircles(~coords$Long, ~coords$Lat, radius=750, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
+    }
   )
 
   # Show a popup at the given location (ORIGINAL)
@@ -124,7 +169,7 @@ function(input, output, session) {
   
   # My own popup
   showCollegePopup <- function(uid, lat, lng) {
-    selectedData <- dataRecent[dataRecent$UID == uid,]
+    selectedData <- filteredData()[filteredData()$UID == uid,]
     content <- as.character(tagList(
       tags$h4(selectedData$Name),
       tags$strong(HTML(sprintf("%s, %s %s",
@@ -132,7 +177,7 @@ function(input, output, session) {
       ))), tags$br(),
       tags$a(selectedData$Link), tags$br(),
       sprintf("Admission rate: %s%%", round(selectedData$AdmRate*100,2)), tags$br(),
-      sprintf("Average cost: %s", dollar(selectedData$Cost*1000)), tags$br(),
+      sprintf("Average tuition: %s", dollar(selectedData$Cost)), tags$br(),
       sprintf("Percentage international: %s%%", round(selectedData$International*100,2))
     ))
     leafletProxy("map") %>% addPopups(lng, lat, content, layerId = uid)
