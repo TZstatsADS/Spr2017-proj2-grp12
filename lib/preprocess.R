@@ -37,7 +37,7 @@ target$ADM_RATE <- as.numeric(as.character(target$ADM_RATE))
 target$popularity <- target$UGDS/(target$ADM_RATE)
 # is.na(target$popularity) <- do.call(cbind,lapply(target$popularity, is.infinite))#replace Inf with NA
 
-# compute value_added
+# compute value_added(defined as salary/family_income ratio)
 ref_tgt <- fread('Spr2017-proj2-grp12/output/selected_MERGED2009_10_PP.csv')
 ref_tgt$MD_EARN_WNE_P6 <- as.numeric(as.character(ref_tgt$MD_EARN_WNE_P6)) 
 target$MD_FAMINC <- as.numeric(as.character(target$MD_FAMINC))
@@ -46,6 +46,18 @@ new_df$value_added <- new_df$MD_EARN_WNE_P6/new_df$MD_FAMINC
 is.na(new_df$value_added) <- do.call(cbind,lapply(new_df$value_added, is.infinite))#replace Inf with NA
 target <- target%>%left_join((new_df%>%select(UNITID,value_added)))
 #write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+
+# compute value_added_dif(defined as salary-family_income difference)
+ref_tgt <- fread('Spr2017-proj2-grp12/output/selected_MERGED2009_10_PP.csv')
+ref_tgt$MD_EARN_WNE_P6 <- as.numeric(as.character(ref_tgt$MD_EARN_WNE_P6)) 
+#target$MD_FAMINC <- as.numeric(as.character(target$MD_FAMINC))
+new_df <- target%>%select(UNITID,MD_FAMINC)%>%inner_join((ref_tgt%>%select(UNITID,MD_EARN_WNE_P6)))
+new_df$value_added_dif <- new_df$MD_EARN_WNE_P6 - new_df$MD_FAMINC
+#is.na(new_df$value_added) <- do.call(cbind,lapply(new_df$value_added, is.infinite))#replace Inf with NA
+target <- target%>%left_join((new_df%>%select(UNITID,value_added_dif)))
+write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+
+# for verification, columbia univeristy id is 190150, harvard university id is 166027, stanford university 243744, NYU 193900, Fordham University 191241
 
 # compute diversity 
 standard.ratio <- c(WHITE=0.637,Black=0.122,HISP=0.163,AIAN=0.007,ASIAN=0.047,NHPI=0.0015,NRA=0.0625,WOMEN=0.5)
