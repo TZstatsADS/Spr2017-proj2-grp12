@@ -73,7 +73,7 @@ target <- fread('Spr2017-proj2-grp12/output/newest_data.csv')
 # regress value_added on selected variables
 # selected <- names(target)[c(12,28:64,66:75,78,81:84,86,88:90,94,95,97,98,107,108,109)]
 # save(selected,file = 'Spr2017-proj2-grp12/output/selected_for_regression.RData')
-load(selected,file = 'Spr2017-proj2-grp12/output/selected_for_regression.RData')
+load('Spr2017-proj2-grp12/output/selected_for_regression.RData')
 to.regress <- target%>%select_(.dots=selected)
 to.regress <- to.regress%>%mutate_if(is.character,as.numeric)
 to.regress$REGION <- as.factor(to.regress$REGION)
