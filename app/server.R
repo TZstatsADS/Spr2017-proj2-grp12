@@ -3,6 +3,9 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+library(shiny) 
+library(plotly)
+library(ggplot2)
 
 # Original template taken from: https://github.com/rstudio/shiny-examples/tree/master/063-superzip-example
 

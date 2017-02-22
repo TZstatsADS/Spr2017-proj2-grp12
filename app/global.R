@@ -4,6 +4,7 @@ library(xlsx)
 # Data preprocessing
 
 dataOriginal <- read.csv("../output/newest_data.csv", header = T, stringsAsFactors = F)
+newtable <- read.csv("../output/newtable.csv", header = T, stringsAsFactors = F)
 
 # preprocess data
 dataOriginal$OTHERS = dataOriginal$UGDS_ASIAN + dataOriginal$UGDS_AIAN  + dataOriginal$UGDS_NHPI + dataOriginal$UGDS_UNKN + dataOriginal$UGDS_2MOR
@@ -47,6 +48,7 @@ dataRecent <- dataOriginal %>%
     Hispanic = Hispanic/(White+Black+Asian+Hispanic+Other),
     Other = Other/(White+Black+Asian+Hispanic+Other)
   )
+
 # change name of majors for easier matching in shiny app filtering
 indexMajStart <- 20
 indexMajStop <- 56

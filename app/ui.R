@@ -10,7 +10,7 @@ vars <- c(
 )
 
 
-navbarPage("Find your college", id="nav",
+navbarPage("Invest Your Education", id="nav",
 
   tabPanel("Interactive map",
     div(class="outer",
@@ -62,10 +62,10 @@ navbarPage("Find your college", id="nav",
       )
     )
   ),
-  nms <- names(newtable)[4:6],
+  nms <- names(newtable)[4:7],
   tabPanel("Data explorer",
     fluidRow(
-      #headerPanel("Diamonds Explorer"),
+      headerPanel("Invest Your education"),
       sidebarPanel(
         #sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
         #            value = 1000, step = 500, round = 0),
@@ -84,3 +84,10 @@ navbarPage("Find your college", id="nav",
 
   conditionalPanel("false", icon("crosshair"))
 )
+# helpText("Deselect default data set when you upload your data set")
+# wellPanel(
+#   h5("Contact Info:"),
+#   h5("Kunal Jagtap"),
+#   helpText(   a("View My LinkedIn Profile",href="https://www.linkedin.com/in/kunaljagtap")),
+#   helpText("srkunaljagtap@gmail.com")
+# )
