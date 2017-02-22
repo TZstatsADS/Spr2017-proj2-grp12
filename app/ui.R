@@ -1,4 +1,5 @@
 library(leaflet)
+library(plotly)
 
 # Choices for drop-downs
 vars <- c(
@@ -8,7 +9,6 @@ vars <- c(
   "Median income" = "income",
   "Population" = "adultpop"
 )
-
 
 navbarPage("Invest Your Education", id="nav",
 
@@ -62,7 +62,6 @@ navbarPage("Invest Your Education", id="nav",
       )
     )
   ),
-  nms <- names(newtable)[4:7],
   tabPanel("Data explorer",
     fluidRow(
       headerPanel("Invest Your education"),
