@@ -253,4 +253,19 @@ function(input, output, session) {
 # 
 #     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
 #   })
-}
+  output$trendPlot <- renderPlotly({
+    
+    # build graph with ggplot syntax
+    #fit <- lm(input$y ~ input$x, data=newtable)
+    p<-ggplot(newtable, aes_string(x = input$x, y = input$y))+
+      geom_point()+
+      geom_smooth(method = "lm", se = FALSE)
+    # if at least one facet column/row is specified, add it
+    # facets <- paste(input$facet_row, '~', input$facet_col)
+    # if (facets != '. ~ .') p <- p + facet_grid(facets)
+    # 
+    ggplotly(p) %>% 
+      layout(height = 500, width = 600, autosize=TRUE)
+    # 
+  })
+  }

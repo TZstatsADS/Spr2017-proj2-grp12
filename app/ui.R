@@ -62,12 +62,24 @@ navbarPage("Find your college", id="nav",
       )
     )
   ),
-
+  nms <- names(newtable)[4:6],
   tabPanel("Data explorer",
     fluidRow(
-      column(3,
-        selectInput("test", "Example of input", c("1","2","3"), multiple=TRUE)
-      ))
+      #headerPanel("Diamonds Explorer"),
+      sidebarPanel(
+        #sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
+        #            value = 1000, step = 500, round = 0),
+        selectInput('x', 'X', choices = nms, selected = "popularity"),
+        selectInput('y', 'Y', choices = nms, selected = "value_added")
+        # selectInput('color', 'Color', choices = nms, selected = "clarity"),
+        # 
+        # selectInput('facet_row', 'Facet Row', c(None = '.', nms), selected = "clarity"),
+        # selectInput('facet_col', 'Facet Column', c(None = '.', nms)),
+        #sliderInput('plotHeight', 'Height of plot (in pixels)', 
+                    #min = 100, max = 2000, value = 1000)
+        ),
+      mainPanel(
+        plotlyOutput('trendPlot', height = "900px")))
   ),
 
   conditionalPanel("false", icon("crosshair"))
