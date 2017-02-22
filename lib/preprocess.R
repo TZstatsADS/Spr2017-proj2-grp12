@@ -57,7 +57,7 @@ new_df$value_added_dif <- new_df$MD_EARN_WNE_P6 - new_df$MD_FAMINC
 target <- target%>%left_join((new_df%>%select(UNITID,value_added_dif)))
 write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
 
-# for verification, columbia univeristy id is 190150, harvard university id is 166027, stanford university 243744, NYU 193900, Fordham University 191241
+# for verification, columbia univeristy id is 190150, harvard university id is 166027, stanford university 243744, NYU 193900, Fordham University 191241, MIT 166683
 
 # compute diversity 
 standard.ratio <- c(WHITE=0.637,Black=0.122,HISP=0.163,AIAN=0.007,ASIAN=0.047,NHPI=0.0015,NRA=0.0625,WOMEN=0.5)
@@ -78,13 +78,54 @@ to.regress <- target%>%select_(.dots=selected)
 to.regress <- to.regress%>%mutate_if(is.character,as.numeric)
 to.regress$REGION <- as.factor(to.regress$REGION)
 #to.regress$LOCALE <- as.factor(to.regress$LOCALE)
-mod <- lm(value_added ~ . -MD_FAMINC - FAMINC_IND -UGDS -GRAD_DEBT_MDN -RPY_3YR_RT, data = to.regress)
+mod <- lm(value_added ~ . -MD_FAMINC - FAMINC_IND -UGDS -GRAD_DEBT_MDN -RPY_3YR_RT, data = (to.regress%>%na.omit()))
 summary(mod)
 
-filtered_X <- c("REGION","PCIP15","PCIP49","COSTT4_A","PCTFLOAN","RPY_3YR_RT","DEBT_MDN","UGDS_WOMEN","FIRST_GEN","popularity","diversity","LOCALE","value_added")
-sub_mod <- lm(value_added ~ .,data = to.regress[,filtered_X])
-summary(sub_mod)
-  
+# Stepwise Regression
+library(MASS)
+step <- stepAIC(mod, direction="both")
+step$anova # display results
+sub_mod <- lm(value_added ~ REGION + PCIP03 + PCIP10 + PCIP11 + PCIP12 + PCIP13 + 
+                  PCIP14 + PCIP15 + PCIP16 + PCIP22 + PCIP23 + PCIP24 + PCIP27 + 
+                  PCIP30 + PCIP31 + PCIP39 + PCIP40 + PCIP42 + PCIP43 + PCIP44 + 
+                  PCIP45 + PCIP47 + PCIP49 + PCIP50 + PCIP51 + PCIP52 + UGDS_WHITE + 
+                  UGDS_BLACK + UGDS_HISP + UGDS_ASIAN + UGDS_AIAN + UGDS_NHPI + 
+                  UGDS_2MOR + UGDS_NRA + UGDS_UNKN + COSTT4_A + TUITFTE + PFTFAC + 
+                  PCTFLOAN + DEBT_MDN + UGDS_WOMEN + FIRST_GEN + popularity + 
+                  diversity + LOCALE, data = to.regress)
+
+
+# # All Subsets Regression
+# library(leaps)
+# best_mod<-regsubsets(value_added ~ . -MD_FAMINC - FAMINC_IND -UGDS -GRAD_DEBT_MDN -RPY_3YR_RT, data = (to.regress%>%na.omit()),nbest=10,really.big = T)
+# # view results 
+# summary(best_mod)
+# # plot a table of models showing variables in each model.
+# # models are ordered by the selection statistic.
+# plot(best_mod,scale="r2")
+# # plot statistic by subset size 
+# library(car)
+# subsets(best_mod, statistic="rsq")  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # null.to.na <- function(x) {
 #   if ((x=="NULL")) {
 #     result <- NA
