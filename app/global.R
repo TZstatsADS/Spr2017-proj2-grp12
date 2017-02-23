@@ -67,11 +67,15 @@ newtable <- dataOriginal %>%
     Debt= DEBT_MDN,
     FirstGeneration= FIRST_GEN,
     Popularity= popularity,
-    Diversity= diversity
+    Diversity= diversity,
+    SchoolType = Nth_cluster,
+    Region = REGION
+    
   )
 
 nms <- names(newtable)[4:13]
 newtable[, c(4:13)] <- sapply(newtable[, c(4:13)], as.numeric)
+newtable$ValueAddedbyRatio <- log(newtable$ValueAddedbyRatio,2)
 # change name of majors for easier matching in shiny app filtering
 indexMajStart <- 20
 indexMajStop <- 55

@@ -19,6 +19,8 @@ library(ggplot2)
 
 # - My data
 
+
+
 function(input, output, session) {
 
   ## Interactive Map ###########################################
@@ -258,19 +260,33 @@ function(input, output, session) {
 #   })
   output$trendPlot <- renderPlotly({
     
+    
+    if (input$checkbox==TRUE){
+      p<-ggplot(newtable, aes_string(x = input$x, y = input$y, color = newtable$AdmRate))+
+        #scale_x_continuous(trans='log10')+
+        #scale_y_continuous(trans='log10')+
+        geom_point(aes(text=paste("Uni:", newtable$Name)), size =1)+
+        geom_smooth(method = "lm", se = FALSE)+
+        geom_hline(yintercept=0)+
+        geom_vline(xintercept=0)
+    }
     # build graph with ggplot syntax
     #fit <- lm(input$y ~ input$x, data=newtable)
-    p<-ggplot(newtable, aes_string(x = input$x, y = input$y))+
-    geom_point(aes(text=paste("Uni:", newtable$Name)),colour = "red", size =1)+
-    geom_smooth(method = "lm", se = FALSE)
+    else{p<-ggplot(newtable, aes_string(x = input$x, y = input$y, color = newtable$AdmRate))+
+      #scale_x_continuous(trans='log10')+
+      #scale_y_continuous(trans='log10')+
+    geom_point(aes(text=paste("Uni:", newtable$Name)), size =1)+
+    geom_smooth(method = "lm", se = FALSE)}
     # if at least one facet column/row is specified, add it
     # facets <- paste(input$facet_row, '~', input$facet_col)
     # if (facets != '. ~ .') p <- p + facet_grid(facets)
     # 
     ggplotly(p) %>% 
       layout(height = 500, width = 600, autosize=TRUE)
+    
     # 
   })
+  
   }
 
 # function(input, output) {

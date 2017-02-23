@@ -63,6 +63,9 @@ navbarPage("Invest Your Education", id="nav",
     )
   ),
   tabPanel("Data explorer",
+          
+        
+           
     fluidRow(
       headerPanel("Linear Regression Model"),
       sidebarPanel(
@@ -78,8 +81,12 @@ navbarPage("Invest Your Education", id="nav",
                     #min = 100, max = 2000, value = 1000)
         helpText("Value_added= "),
         helpText("Diversity= "),
-        helpText("Popularity= Number of Admitted Undergraduates/Admisson Rate ")
+        helpText("Popularity= Number of Admitted Undergraduates/Admisson Rate "),
+        checkboxInput("checkbox", label = "Draw Axis", value = TRUE),
+        fluidRow(column(3, verbatimTextOutput("value")))
         ),
+      
+      
       mainPanel(
         plotlyOutput('trendPlot', height = "900px"))),
     
