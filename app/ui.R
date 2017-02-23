@@ -64,29 +64,27 @@ navbarPage("Invest Your Education", id="nav",
   ),
   tabPanel("Data explorer",
     fluidRow(
-      headerPanel("Invest Your education"),
+      headerPanel("Linear Regression Model"),
       sidebarPanel(
         #sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
         #            value = 1000, step = 500, round = 0),
-        selectInput('x', 'X', choices = nms, selected = "popularity"),
-        selectInput('y', 'Y', choices = nms, selected = "value_added")
+        selectInput('x', 'X', choices = nms, selected = "Popularity"),
+        selectInput('y', 'Y', choices = nms, selected = "ValueAddedbyRatio"),
         # selectInput('color', 'Color', choices = nms, selected = "clarity"),
         # 
         # selectInput('facet_row', 'Facet Row', c(None = '.', nms), selected = "clarity"),
         # selectInput('facet_col', 'Facet Column', c(None = '.', nms)),
         #sliderInput('plotHeight', 'Height of plot (in pixels)', 
                     #min = 100, max = 2000, value = 1000)
+        helpText("Value_added= "),
+        helpText("Diversity= "),
+        helpText("Popularity= Number of Admitted Undergraduates/Admisson Rate ")
         ),
       mainPanel(
-        plotlyOutput('trendPlot', height = "900px")))
-  ),
+        plotlyOutput('trendPlot', height = "900px"))),
+    
+ 
 
   conditionalPanel("false", icon("crosshair"))
 )
-# helpText("Deselect default data set when you upload your data set")
-# wellPanel(
-#   h5("Contact Info:"),
-#   h5("Kunal Jagtap"),
-#   helpText(   a("View My LinkedIn Profile",href="https://www.linkedin.com/in/kunaljagtap")),
-#   helpText("srkunaljagtap@gmail.com")
-# )
+)

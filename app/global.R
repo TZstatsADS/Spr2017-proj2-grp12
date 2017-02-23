@@ -4,8 +4,8 @@ library(xlsx)
 # Data Loading
 
 dataOriginal <- read.csv("../output/newest_data.csv", header = T, stringsAsFactors = F)
-newtable <- read.csv("../output/newtable.csv", header = T, stringsAsFactors = F)
-nms <- names(newtable)[4:7]
+#newtable <- read.csv("../output/newtable.csv", header = T, stringsAsFactors = F)
+
 
 # preprocess data
 dataOriginal$OTHERS = dataOriginal$UGDS_ASIAN + dataOriginal$UGDS_AIAN  + dataOriginal$UGDS_NHPI + dataOriginal$UGDS_UNKN + dataOriginal$UGDS_2MOR
@@ -50,9 +50,31 @@ dataRecent <- dataOriginal %>%
     Other = Other/(White+Black+Asian+Hispanic+Other)
   )
 
+
+#set a newtable for data exploration.
+
+newtable <- dataOriginal %>%
+  select(
+    UID = UNITID,
+    Name = INSTNM,
+    AdmRate = ADM_RATE_ALL,
+    Cost = TUITIONFEE_OUT,
+    TuitionIN = TUITIONFEE_IN,
+    ValueAddedbyRatio= value_added,
+    ValueAddedbyDifference= value_added_dif,
+    FacultySalary= AVGFACSAL,
+    PercentageofLoan= PCTFLOAN,
+    Debt= DEBT_MDN,
+    FirstGeneration= FIRST_GEN,
+    Popularity= popularity,
+    Diversity= diversity
+  )
+
+nms <- names(newtable)[4:13]
+newtable[, c(4:13)] <- sapply(newtable[, c(4:13)], as.numeric)
 # change name of majors for easier matching in shiny app filtering
 indexMajStart <- 20
-indexMajStop <- 56
+indexMajStop <- 55
 names(dataRecent)[indexMajStart:indexMajStop] <- apply(matrix(1:(indexMajStop-indexMajStart+1)),1,function(x)paste("MAJPER",x))
 
 load("../output/selectedColsNames.RData")

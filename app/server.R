@@ -261,8 +261,8 @@ function(input, output, session) {
     # build graph with ggplot syntax
     #fit <- lm(input$y ~ input$x, data=newtable)
     p<-ggplot(newtable, aes_string(x = input$x, y = input$y))+
-      geom_point()+
-      geom_smooth(method = "lm", se = FALSE)
+    geom_point(aes(text=paste("Uni:", newtable$Name)),colour = "red", size =1)+
+    geom_smooth(method = "lm", se = FALSE)
     # if at least one facet column/row is specified, add it
     # facets <- paste(input$facet_row, '~', input$facet_col)
     # if (facets != '. ~ .') p <- p + facet_grid(facets)
@@ -272,3 +272,10 @@ function(input, output, session) {
     # 
   })
   }
+
+# function(input, output) {
+#   
+#   # You can access the value of the widget with input$checkbox, e.g.
+#   output$value <- renderPrint({ input$checkbox })
+#   
+# }
