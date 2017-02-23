@@ -1,4 +1,4 @@
-# Project 2: Open Data App - an RShiny app development project
+# Project 2: Invest Your Education - an RShiny app development project
 
 ### [Project Description](doc/project2_desc.md)
 
@@ -20,8 +20,8 @@ The **learning goals** for this project is:
 Term: Spring 2017
 
 + Team Group 12
-+ **Projec title**: Invest Your Education
-	+ Zhishan Wang
++ **Team Member**
+	+ Zhishan Wang (Presenter)
 	+ Ziwei Meng
 	+ Virgile Mison
 	+ Jingwen Yin
@@ -29,7 +29,7 @@ Term: Spring 2017
 
 + **Project summary**: This shiny app helps choose the college by location, tuition, majors and we can visualize several key features of each school. It also analyzes the possible factors that can influence the investment in education by linear regression.
 
-**Contribution statement**:  Virgile, Zhishang, Ziwei, Jingwen contributed equally in all stages of this project. Virgile and Jingwen worked on the interactive map tab, and Ziwei and Zhishan worked on the explore data tab.
+**Contribution statement**: Virgile and Jingwen worked on the interactive map tab, and Ziwei and Zhishan worked on the explore data tab.
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
