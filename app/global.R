@@ -59,6 +59,7 @@ newtable <- dataOriginal %>%
     UID = UNITID,
     Name = INSTNM,
     AdmRate = ADM_RATE_ALL,
+    AdmRateGroup = adm_group,
     Cost = TUITIONFEE_OUT,
     TuitionIN = TUITIONFEE_IN,
     ValueAddedbyRatio = value_added,
@@ -74,10 +75,12 @@ newtable <- dataOriginal %>%
     Urbanization = LOCALE,
     PercentageofLoan = PCTFLOAN
   )
-
-nms <- names(newtable)[4:13]
-newtable[, c(4:13)] <- sapply(newtable[, c(4:13)], as.numeric)
-newtable$ValueAddedbyRatio <- log(newtable$ValueAddedbyRatio,2)
+#it's dangerous to use index by specified constants
+nms <- names(newtable)[c(2,4,7:18)]
+first_ind <- c(1:(dim(newtable)[2]))[names(newtable)=="AdmRate"]
+#newtable[, c(4:13)] <- sapply(newtable[, c(4:13)], as.numeric)
+newtable[,c(first_ind:dim(newtable)[2])] <- newtable%>%select(AdmRate:PercentageofLoan)%>%mutate_if(is.character,as.numeric)
+newtable$ValueAddedbyRatio <- log(newtable$ValueAddedbyRatio)
 # change name of majors for easier matching in shiny app filtering
 indexMajStart <- 20
 indexMajStop <- 55
