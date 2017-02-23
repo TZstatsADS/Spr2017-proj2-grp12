@@ -5,6 +5,7 @@ library(xlsx)
 
 dataOriginal <- read.csv("../output/newest_data.csv", header = T, stringsAsFactors = F)
 #newtable <- read.csv("../output/newtable.csv", header = T, stringsAsFactors = F)
+#load("../output/predictors_rank.RData")
 
 
 # preprocess data
@@ -60,17 +61,18 @@ newtable <- dataOriginal %>%
     AdmRate = ADM_RATE_ALL,
     Cost = TUITIONFEE_OUT,
     TuitionIN = TUITIONFEE_IN,
-    ValueAddedbyRatio= value_added,
-    ValueAddedbyDifference= value_added_dif,
-    FacultySalary= AVGFACSAL,
-    PercentageofLoan= PCTFLOAN,
-    Debt= DEBT_MDN,
-    FirstGeneration= FIRST_GEN,
-    Popularity= popularity,
-    Diversity= diversity,
+    ValueAddedbyRatio = value_added,
+    ValueAddedbyDifference = value_added_dif,
+    FamilyIncomeGroup = familyIncome_group,
+    FirstGeneration = FIRST_GEN,
+    Region = REGION,
+    Diversity = diversity,
+    Popularity = popularity,
     SchoolType = Nth_cluster,
-    Region = REGION
-    
+    FacultySalary = AVGFACSAL,
+    Debt = DEBT_MDN,
+    Urbanization = LOCALE,
+    PercentageofLoan = PCTFLOAN
   )
 
 nms <- names(newtable)[4:13]
