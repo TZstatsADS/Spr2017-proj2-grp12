@@ -63,7 +63,7 @@ function(input, output, session) {
     }
     # filter majors
     if (!is.null(input$majors)){
-      maj <- apply(matrix(which(majors %in% input$majors)),1,function(x)paste("MAJPER",x))
+      maj <- apply(matrix(which(input$majors %in% majors)),1,function(x)paste("MAJPER",x))
       res <- res[res[,maj]!=0,]
     }
     
@@ -124,8 +124,15 @@ function(input, output, session) {
       #  layerId="colorLegend")
   })
   
+  # observeEvent(input$zoom, {
+  #   updateNumericInput(session, "admRates", value = 1:4)
+  #   updateNumericInput(session, "admRates", value = 1:4)
+  #   updateNumericInput(session, "admRates", value = 1:4)
+  # })
+  
+  
   # This observer allow to zoom to a specific city or a university
-  observe(
+  observe({
     # if it is a city, zoom to view with all universities
     if ( input$zoom!="" && input$zoom %in% cities){
       coords <- filteredData()[filteredData()$City==input$zoom,c(1,5,6)]
@@ -155,7 +162,7 @@ function(input, output, session) {
       addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=750, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
       addCircles(~coords$Long, ~coords$Lat, radius=750, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
     }
-  )
+  })
 
   # Show a popup at the given location (ORIGINAL)
   # showZipcodePopup <- function(zipcode, lat, lng) {
