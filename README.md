@@ -22,7 +22,11 @@ Term: Spring 2017
 
 + **Project summary**: This shiny app helps choose the college by location, tuition, majors and we can visualize several key features of each school. It also analyzes the possible factors that can influence the investment in education by linear regression.
 
-+ **Contribution statement**: Virgile and Jingwen worked on the interactive map tab, and Ziwei and Zhishan worked on the explore data tab.
++ **Contribution statement**: 
+	+ Virgile: Set up the map and filter some basic features to narrow down the universities. 
+	+ Jingwen: Build absolutePanel to get detailed information for the university clicked on the map.
+	+ Zhishan: Set up and improve the linear regression model. 
+	+ Ziwei: Set up and improve the linear regression model.
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
