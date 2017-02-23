@@ -143,7 +143,7 @@ function(input, output, session) {
     Diversity<-sub$Diversity
     true_radar<-c(Selectivity, Popularity, Median_Debt, Value_added, Diversity)
     radar<-as.data.frame(rbind(max_radar, min_radar, true_radar))
-    colnames(radar)<-c("Selectivity", "Popularity", "Median_Debt", "Value_added", "Diveristy")
+    colnames(radar)<-c("Selectivity", "Popularity", "Median Debt", "Value Added", "Diveristy")
     radarchart(radar)
     
     # Custom the radarChart !
@@ -194,11 +194,11 @@ function(input, output, session) {
   
   output$table <- renderTable({
     sub<-newtable[newtable$Name==input$college,]
-    Information<-c("Admission Rate", "In State Tuition", "Out of State Tuition", "Popularity", "Diversity",
-                   "Average Faculty Income", "Percentage of Loan", "Median Debt", "Proportion of First Generation")
-    Value<-c(round(sub$AdmRate,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
-             round(sub$Diversity,2), round(sub$FacultySalary,2), round(sub$PercentageofLoan,2), round(sub$Debt,2),round(sub$FirstGeneration,2))
-    data<-data.frame(cbind(Information, Value))
+    Features<-c("Locale of Institution","Admission Rate(%)", "In State Tuition($)", "Out of State Tuition($)", "Popularity", "Diversity",
+                   "Average Faculty Income($)", "Percentage of Loan(%)", "Median Debt($)", "Proportion of First Generation(%)")
+    Value<-c(sub$Locale,round(sub$AdmRate*100,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
+             round(sub$Diversity,4), round(sub$FacultySalary,2), round(sub$PercentageofLoan*100,2), round(sub$Debt,2),round(sub$FirstGeneration*100,2))
+    data<-data.frame(cbind(Features, Value))
     data
   })
   # This observer allow to zoom to a specific city or a university
@@ -257,10 +257,10 @@ function(input, output, session) {
       tags$strong(HTML(sprintf("%s, %s %s",
                                selectedData$City, selectedData$State, selectedData$Zip
       ))), tags$br(),
-      tags$a(selectedData$Link), tags$br(),
-      sprintf("Admission rate: %s%%", round(selectedData$AdmRate*100,2)), tags$br(),
-      sprintf("Average tuition: %s", dollar(selectedData$Cost)), tags$br(),
-      sprintf("Percentage international: %s%%", round(selectedData$International*100,2))
+      tags$a(selectedData$Link), tags$br()
+#      sprintf("Admission rate: %s%%", round(selectedData$AdmRate*100,2)), tags$br(),
+#      sprintf("Average tuition: %s", dollar(selectedData$Cost)), tags$br(),
+#      sprintf("Percentage international: %s%%", round(selectedData$International*100,2))
     ))
     leafletProxy("map") %>% addPopups(lng, lat, content, layerId = uid)
   }

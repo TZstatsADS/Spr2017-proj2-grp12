@@ -120,3 +120,25 @@ max_radar<- c(max_sel, max_pop, max_deb, max_val, max_div)
 min_radar<- c(min_sel, min_pop, min_deb, min_val, min_div)
 gender<-c("Gender")
 ethnicity<-c("Ethnicity")
+
+# Change the Locale int variable to char 
+loc<-function(l){
+  if (l==11||l==12||l==13||l==14){
+    return("City")
+  }
+  if (l==21||l==22||l==23||l==24){
+    return("Suburb")
+  }
+  if (l==31||l==32||l==33||l==34){
+    return("Town")
+  }
+  if (l==41||l==42||l==43||l==44){
+    return("Rural")
+  }
+  else{
+    return("Unknown")
+  }
+}
+for(i in 1:nrow(newtable)){
+  newtable$Locale[i]<-loc(newtable$Urbanization[i])
+}

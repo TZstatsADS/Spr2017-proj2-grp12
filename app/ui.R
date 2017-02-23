@@ -47,7 +47,7 @@ navbarPage("Invest Your Education", id="nav",
                             draggable = TRUE, top = 180, right=0, bottom = 0,
                             width = 400,
                             
-                            h2("Comparison"),
+                            h2("Detailed Information"),
                             
                             selectizeInput("college", 'University',
                                            choices = c("",universities), selected=""),
