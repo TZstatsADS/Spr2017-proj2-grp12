@@ -31,7 +31,7 @@ library(dplyr)
 
 #popularity against value_added
 # target <- fread('Spr2017-proj2-grp12/output/selected_MERGED2014_15_PP.csv')
-target <- fread('Spr2017-proj2-grp12/output/newest_data.csv')
+target <- fread('Spr2017-proj2-grp12/output/newest_data.csv',header = T, stringsAsFactors = F)
 
 # compute popularity
 target$UGDS <- as.numeric(as.character(target$UGDS))
@@ -57,7 +57,12 @@ new_df <- target%>%select(UNITID,MD_FAMINC)%>%inner_join((ref_tgt%>%select(UNITI
 new_df$value_added_dif <- new_df$MD_EARN_WNE_P6 - new_df$MD_FAMINC
 #is.na(new_df$value_added) <- do.call(cbind,lapply(new_df$value_added, is.infinite))#replace Inf with NA
 target <- target%>%left_join((new_df%>%select(UNITID,value_added_dif)))
-write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+# write.csv(target,'Spr2017-proj2-grp12/output/newest_data.csv')
+
+# group family income
+target <- target %>% mutate(familyIncome_group=cut(MD_FAMINC,breaks=c(0,30000,75000,200000),labels=c(1,2,3)))
+target <- target %>% mutate(adm_group=cut(ADM_RATE,breaks=c(0,0.1,0.2,0.3,0.4,0.5,0.7,1.0),labels=c(0.1,0.2,0.3,0.4,0.5,0.7,1.0)))
+
 
 # for verification, columbia univeristy id is 190150, harvard university id is 166027, stanford university 243744, NYU 193900, Fordham University 191241, MIT 166683
 
@@ -147,11 +152,18 @@ target <- target[,first_ind:(dim(target)[2])]
 load('Spr2017-proj2-grp12/output/final_predictors.RData')
 to.regress <- target%>%select_(.dots=c(final_cols,"value_added_dif"))
 #transform character columns to numeric
-mid <- target%>%select(PCIP01:PCIP52)%>%mutate_if(is.character,as.numeric)
+to.regress <- to.regress%>%mutate_if(is.character,as.numeric)
+to.regress$REGION <- as.factor(to.regress$REGION)
+to.regress$LOCALE <- as.factor(to.regress$LOCALE)
+to.regress$Nth_cluster <- as.factor(to.regress$Nth_cluster)
 # major_cols <- names(target%>%select(PCIP01:PCIP52))
 # target[,major_cols] <- mid
-full <- lm(value_added_dif~.,data = to.regress) 
-names(to.regress)
+to.regress <- to.regress%>%na.omit()
+null.mod <- lm(value_added_dif~1,data = to.regress)
+full.mod <- lm(value_added_dif~.,data = to.regress) 
+step(null.mod, scope=list(lower=null.mod, upper=full.mod), direction="forward")
+importance_rank <- c("FIRST_GEN","diversity","REGION","popularity","Nth_cluster","AVGFACSAL","DEBT_MDN","LOCALE","PCTFLOAN")
+#save(importance_rank,file = 'Spr2017-proj2-grp12/output/predictors_rank.RData')
 
 
 
