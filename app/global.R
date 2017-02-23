@@ -1,10 +1,11 @@
 library(dplyr)
 library(xlsx)
 
-# Data preprocessing
+# Data Loading
 
 dataOriginal <- read.csv("../output/newest_data.csv", header = T, stringsAsFactors = F)
 newtable <- read.csv("../output/newtable.csv", header = T, stringsAsFactors = F)
+nms <- names(newtable)[4:7]
 
 # preprocess data
 dataOriginal$OTHERS = dataOriginal$UGDS_ASIAN + dataOriginal$UGDS_AIAN  + dataOriginal$UGDS_NHPI + dataOriginal$UGDS_UNKN + dataOriginal$UGDS_2MOR
