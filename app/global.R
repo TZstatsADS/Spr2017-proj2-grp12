@@ -91,7 +91,7 @@ vars <- read.xlsx2("../data/CollegeScorecardDataDictionary.xlsx", sheetName = "V
 vars <- vars[vars[,1]!="",]
 selectedCols = vars[vars$VARIABLE.NAME %in% cols,]
 
-majors <- substring(vars[substring(vars$VARIABLE.NAME,1,4)=="PCIP",1],34)
+majors <- substring(vars[substring(vars$VARIABLE.NAME,1,4)=="PCIP",1],34)[-c(37,38)]
 cities <- levels(factor(dataRecent$City))
 universities <- as.character(dataRecent$Name)
 

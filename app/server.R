@@ -63,7 +63,7 @@ function(input, output, session) {
     }
     # filter majors
     if (!is.null(input$majors)){
-      maj <- apply(matrix(which(input$majors %in% majors)),1,function(x)paste("MAJPER",x))
+      maj <- apply(matrix(which(majors %in% input$majors)),1,function(x)paste("MAJPER",x))
       res <- res[res[,maj]!=0,]
     }
     
