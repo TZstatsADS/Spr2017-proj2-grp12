@@ -64,7 +64,7 @@ navbarPage("Invest Your Education", id="nav",
       ),
 
       tags$div(id="cite",
-        'Data compiled from ', tags$em('https://collegescorecard.ed.gov/'), ' by Jingwen, Vic, Virgile, Zhishan and Ziwei  (Columbia University, 2017).'
+        'Data compiled from ', tags$em('https://collegescorecard.ed.gov/'), ' by Jingwen, Virgile, Zhishan and Ziwei  (Columbia University, 2017).'
       )
     )
   ),
