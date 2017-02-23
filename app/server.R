@@ -6,6 +6,7 @@ library(dplyr)
 library(shiny) 
 library(plotly)
 library(ggplot2)
+library(fmsb)
 
 # Original template taken from: https://github.com/rstudio/shiny-examples/tree/master/063-superzip-example
 
@@ -130,7 +131,76 @@ function(input, output, session) {
   #   updateNumericInput(session, "admRates", value = 1:4)
   # })
   
+  output$spider<-renderPlot({
+    if (input$college==""){
+      return(NULL)
+    }
+    sub<-newtable[newtable$Name==input$college,]
+    Selectivity<-1-sub$AdmRate
+    Popularity<-sub$Popularity
+    Median_Debt<-sub$Debt
+    Value_added<-sub$ValueAddedbyRatio
+    Diversity<-sub$Diversity
+    true_radar<-c(Selectivity, Popularity, Median_Debt, Value_added, Diversity)
+    radar<-as.data.frame(rbind(max_radar, min_radar, true_radar))
+    colnames(radar)<-c("Selectivity", "Popularity", "Median_Debt", "Value_added", "Diveristy")
+    radarchart(radar)
+    
+    # Custom the radarChart !
+    radarchart( radar  , axistype=1 ,
+                #custom polygon
+                pcol=rgb(0.2,0.5,0.5,0.9) , pfcol=rgb(0.2,0.5,0.5,0.5) , plwd=4 ,
+                #custom the grid
+                cglcol="grey", cglty=1, axislabcol="grey", cglwd=0.8,
+                #custom labels
+                vlcex=0.8
+    )
+  })
   
+  output$gender_bar<-renderPlotly({
+    if (input$college==""){
+      return(NULL)
+    }
+    sub<-filteredData()[filteredData()$Name==input$college,]
+    gender<-gender
+    male<-sub$Gender.Men
+    female<-sub$Gender.Women
+    gen<-data.frame(gender,male,female)
+    plot_ly(gen, x = ~male, y = ~gender, type = 'bar', orientation = 'h', name = 'Male') %>%
+      add_trace(x = ~female, name = 'Female') %>%
+      layout(xaxis = list(title = 'Proportion'), yaxis = list(title =""), barmode = 'stack')
+  })
+  
+  output$race_bar<-renderPlotly({
+    if (input$college==""){
+      return(NULL)
+    }
+    sub<-filteredData()[filteredData()$Name==input$college,]
+    ethnicity<-ethnicity
+    white<-sub$White
+    black<-sub$Black
+    asian<-sub$Asian
+    hispanic<-sub$Hispanic
+    other<-sub$Other
+    race<-data.frame(ethnicity, white, black, asian, hispanic, other)
+    
+    plot_ly(race, x = ~white, y = ~ethnicity, type = 'bar', orientation = 'h', name = 'White') %>%
+      add_trace(x = ~black, name = 'Black') %>%
+      add_trace(x = ~asian, name = 'Asian') %>%
+      add_trace(x = ~hispanic, name = 'Hispanic') %>%
+      add_trace(x = ~other, name = 'Other') %>%
+      layout(xaxis = list(title = 'Proportion'), yaxis = list(title =""), barmode = 'stack')
+  })
+  
+  output$table <- renderTable({
+    sub<-newtable[newtable$Name==input$college,]
+    Information<-c("Admission Rate", "In State Tuition", "Out of State Tuition", "Popularity", "Diversity",
+                   "Average Faculty Income", "Percentage of Loan", "Median Debt", "Proportion of First Generation")
+    Value<-c(round(sub$AdmRate,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
+             round(sub$Diversity,2), round(sub$FacultySalary,2), round(sub$PercentageofLoan,2), round(sub$Debt,2),round(sub$FirstGeneration,2))
+    data<-data.frame(cbind(Information, Value))
+    data
+  })
   # This observer allow to zoom to a specific city or a university
   observe({
     # if it is a city, zoom to view with all universities
@@ -207,6 +277,20 @@ function(input, output, session) {
     })
   })
 
+  observeEvent(input$map_shape_click, {
+    
+    shinyjs::show(id = "conditionalPanel")
+    event <- input$map_shape_click
+    uid <- event$id
+    name_uni <- dataRecent[dataRecent$UID==uid,2]
+    updateTextInput(session, "college", value=name_uni)
+    
+  })
+  observeEvent(input$map_click, {
+    
+    shinyjs::hide(id = "conditionalPanel")
+    
+  })
 
   ## Data Explorer ###########################################
 # 

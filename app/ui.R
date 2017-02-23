@@ -1,5 +1,6 @@
 library(leaflet)
 library(plotly)
+library(shinyjs)
 
 # Choices for drop-downs
 vars <- c(
@@ -38,24 +39,29 @@ navbarPage("Invest Your Education", id="nav",
 
       leafletOutput("map", width="100%", height="80%"),
       
-      # Absolute panel (to do)
-      # Shiny versions prior to 0.11 should use class="modal" instead.
-      # absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-      #   draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
-      #   width = 330, height = "auto",
-      # 
-      #   h2("ZIP explorer"),
-      # 
-      #   selectInput("color", "Color", vars),
-      #   selectInput("size", "Size", vars, selected = "adultpop"),
-      #   conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-      #     # Only prompt for threshold when coloring or sizing by superzip
-      #     numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-      #   ),
-      # 
-      #   plotOutput("histCentile", height = 200),
-      #   plotOutput("scatterCollegeIncome", height = 250)
-      # ),
+      useShinyjs(), 
+      hidden( 
+        div(id = "conditionalPanel",
+            fluidRow(
+              absolutePanel(id = "controls", class = "panel panel-default", style="overflow-y:scroll; margin-bottom: 0px;", fixed = TRUE,
+                            draggable = TRUE, top = 180, right=0, bottom = 0,
+                            width = 400,
+                            
+                            h2("Comparison"),
+                            
+                            selectizeInput("college", 'University',
+                                           choices = c("",universities), selected=""),
+                            plotOutput("spider", height = 350),
+                            plotlyOutput("gender_bar", height = 110),
+                            plotlyOutput("race_bar", height = 110),
+                            tableOutput("table"),
+                            fluidRow(
+                              
+                            )
+              )
+            )
+        )
+      ),
 
       tags$div(id="cite",
         'Data compiled from ', tags$em('https://collegescorecard.ed.gov/'), ' by Jingwen, Vic, Virgile, Zhishan and Ziwei  (Columbia University, 2017).'

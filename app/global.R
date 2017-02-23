@@ -97,3 +97,26 @@ universities <- as.character(dataRecent$Name)
 
 # Choices of levels for input variables 
 adm_rate_th <- c(0.15,0.30,0.5)
+
+# Change the missing data to zero
+for (i in 1:nrow(newtable)){
+  newtable$ValueAddedbyRatio[i]<-ifelse(is.na(newtable$ValueAddedbyRatio[i]), 0, newtable$ValueAddedbyRatio[i])
+  newtable$Popularity[i]<-ifelse(is.na(newtable$Popularity[i])==T, 0, newtable$Popularity[i])
+  newtable$Debt[i]<-ifelse(is.na(newtable$Debt[i])==T, 0, newtable$Debt[i])
+}
+
+# Get the range of variable for radar chart
+max_sel<-max(newtable$AdmRate)
+max_pop<-max(newtable$Popularity)
+max_deb<-max(newtable$Debt)
+max_val<-max(newtable$ValueAddedbyRatio)
+max_div<-max(newtable$Diversity)
+min_sel<-min(newtable$AdmRate)
+min_pop<-min(newtable$Popularity)
+min_deb<-min(newtable$Debt)
+min_val<-min(newtable$ValueAddedbyRatio)
+min_div<-min(newtable$Diversity)
+max_radar<- c(max_sel, max_pop, max_deb, max_val, max_div)
+min_radar<- c(min_sel, min_pop, min_deb, min_val, min_div)
+gender<-c("Gender")
+ethnicity<-c("Ethnicity")
