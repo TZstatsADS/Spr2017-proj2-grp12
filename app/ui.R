@@ -22,7 +22,7 @@ navbarPage("Invest Your Education", id="nav",
         includeScript("gomap.js")
       ),
       
-      fluidRow(style = "padding-bottom: 0px; margin-top: 20px; margin-left: 10px;margin-right: 10px;",
+      fluidRow(style = "padding-top: 0px; padding-bottom: 0px; margin-top: 20px; margin-left: 10px;margin-right: 10px;",
                column(1, selectizeInput('stateFrom', 'Original state',
                                      choices = c("",levels(factor(dataRecent$State))), selected="")),
                column(2, selectizeInput(
@@ -37,13 +37,13 @@ navbarPage("Invest Your Education", id="nav",
                                      choices = c("",cities, universities), selected=""))
       ),
 
-      leafletOutput("map", width="100%", height="80%"),
+      leafletOutput("map", width="100%", height = 565),
       
       useShinyjs(), 
       hidden( 
         div(id = "conditionalPanel",
             fluidRow(
-              absolutePanel(id = "controls", class = "panel panel-default", style="overflow-y:scroll; margin-bottom: 0px;", fixed = TRUE,
+              absolutePanel(id = "controls", class = "panel panel-default", style="overflow-y:scroll; margin-top: 20px; margin-bottom: 0px;", fixed = TRUE,
                             draggable = TRUE, top = 180, right=0, bottom = 0,
                             width = 400,
                             
