@@ -22,6 +22,8 @@ Term: Spring 2017
 
 + **Project summary**: This shiny app helps choose the college by location, tuition, majors and we can visualize several key features of each school. It also analyzes the possible factors that can influence the investment in education by linear regression.
 
++ **App Link**:https://ziweimeng.shinyapps.io/investyoureducation/
+
 + **Contribution statement**: 
 	+ Virgile: Set up the map and filter some basic features to narrow down the universities. 
 	+ Jingwen: Build absolutePanel to get detailed information for the university clicked on the map.
