@@ -91,6 +91,8 @@ newtable <- dataOriginal %>%
     PercentageOfLoan = PCTFLOAN,
     FamilyIncome = MD_FAMINC
   )
+newtable$Locale<-newtable$Urbanization
+newtable$School <- newtable$SchoolType
 newtable$FamilyIncomeGroup <- factor(mapvalues(newtable$FamilyIncomeGroup, from=c(1, 2, 3), to=c("Low", "Median", "High")))
 newtable$AdmRateGroup <- factor(newtable$AdmRateGroup)
 newtable$SchoolType <- factor(newtable$SchoolType)
@@ -98,7 +100,7 @@ newtable$Region <- factor(newtable$Region)
 newtable$Urbanization <- factor(newtable$Urbanization)
 
 # functions and variables for use
-nms <- c("Name","AdmRate","AdmRateGroup","ValueAddedByRatio","ValueAddedByDifference","FamilyIncomeGroup","FirstGeneration","Region"      ,"Diversity","Popularity","SchoolType","FacultySalary","Debt"     ,"Urbanization","PercentageOfLoan","FamilyIncome")
+nms <- c("Name","AdmRate","AdmRateGroup","ValueAddedByRatio","ValueAddedByDifference","FamilyIncomeGroup","FirstGeneration","Region","Diversity","Popularity","SchoolType","FacultySalary","Debt"     ,"Urbanization","PercentageOfLoan","FamilyIncome")
 adjR.square <- as.data.frame(list(adj.r.square = c(0.5871,0.6316,0.6625,0.6878,0.7042,0.7099,0.7152,0.7204,0.7214), predictor=nms[c(7:15)]))
 adjR.square$predictor <- factor(adjR.square$predictor,levels=adjR.square$predictor[order(adjR.square$adj.r.square)])
 number_ticks <- function(n) {function(limits) pretty(limits, n)}
@@ -130,47 +132,25 @@ universities <- as.character(dataRecent$Name)
 # Choices of levels for input variables 
 adm_rate_th <- c(0.15,0.30,0.5)
 
-# # Change the missing data to zero
-# for (i in 1:nrow(newtable)){
-#   newtable$ValueAddedbyRatio[i]<-ifelse(is.na(newtable$ValueAddedbyRatio[i]), 0, newtable$ValueAddedbyRatio[i])
-#   newtable$Popularity[i]<-ifelse(is.na(newtable$Popularity[i])==T, 0, newtable$Popularity[i])
-#   newtable$Debt[i]<-ifelse(is.na(newtable$Debt[i])==T, 0, newtable$Debt[i])
-# }
-# 
-# # Get the range of variable for radar chart
-# max_sel<-max(newtable$AdmRate)
-# max_pop<-max(newtable$Popularity)
-# max_deb<-max(newtable$Debt)
-# max_val<-max(newtable$ValueAddedbyRatio)
-# max_div<-max(newtable$Diversity)
-# min_sel<-min(newtable$AdmRate)
-# min_pop<-min(newtable$Popularity)
-# min_deb<-min(newtable$Debt)
-# min_val<-min(newtable$ValueAddedbyRatio)
-# min_div<-min(newtable$Diversity)
-# max_radar<- c(max_sel, max_pop, max_deb, max_val, max_div)
-# min_radar<- c(min_sel, min_pop, min_deb, min_val, min_div)
-# gender<-c("Gender")
-# ethnicity<-c("Ethnicity")
-# 
-# # Change the Locale int variable to char 
-# loc<-function(l){
-#   if (l==11||l==12||l==13||l==14){
-#     return("City")
-#   }
-#   if (l==21||l==22||l==23||l==24){
-#     return("Suburb")
-#   }
-#   if (l==31||l==32||l==33||l==34){
-#     return("Town")
-#   }
-#   if (l==41||l==42||l==43||l==44){
-#     return("Rural")
-#   }
-#   else{
-#     return("Unknown")
-#   }
-# }
-# for(i in 1:nrow(newtable)){
-#   newtable$Locale[i]<-loc(newtable$Urbanization[i])
-# }
+# Change the missing data to zero
+for (i in 1:nrow(newtable)){
+  newtable$ValueAddedByRatio[i]<-ifelse(is.na(newtable$ValueAddedByRatio[i]), 0, newtable$ValueAddedByRatio[i])
+  newtable$Popularity[i]<-ifelse(is.na(newtable$Popularity[i])==T, 0, newtable$Popularity[i])
+  newtable$Debt[i]<-ifelse(is.na(newtable$Debt[i])==T, 0, newtable$Debt[i])
+}
+
+# Get the range of variable for radar chart
+max_sel<-max(newtable$AdmRate)
+max_pop<-max(newtable$Popularity)
+max_deb<-max(newtable$Debt)
+max_val<-max(newtable$ValueAddedByRatio)
+max_div<-max(newtable$Diversity)
+min_sel<-min(newtable$AdmRate)
+min_pop<-min(newtable$Popularity)
+min_deb<-min(newtable$Debt)
+min_val<-min(newtable$ValueAddedByRatio)
+min_div<-min(newtable$Diversity)
+max_radar<- c(max_sel, max_pop, max_deb, max_val, max_div)
+min_radar<- c(min_sel, min_pop, min_deb, min_val, min_div)
+gender<-c("Gender")
+ethnicity<-c("Ethnicity")

@@ -139,7 +139,7 @@ function(input, output, session) {
     Selectivity<-1-sub$AdmRate
     Popularity<-sub$Popularity
     Median_Debt<-sub$Debt
-    Value_added<-sub$ValueAddedbyRatio
+    Value_added<-sub$ValueAddedByRatio
     Diversity<-sub$Diversity
     true_radar<-c(Selectivity, Popularity, Median_Debt, Value_added, Diversity)
     radar<-as.data.frame(rbind(max_radar, min_radar, true_radar))
@@ -194,10 +194,10 @@ function(input, output, session) {
   
   output$table <- renderTable({
     sub<-newtable[newtable$Name==input$college,]
-    Features<-c("Locale of Institution","Admission Rate(%)", "In State Tuition($)", "Out of State Tuition($)", "Popularity", "Diversity",
+    Features<-c("Locale of Institution","School Type", "Admission Rate(%)", "In State Tuition($)", "Out of State Tuition($)", "Popularity", "Diversity",
                    "Average Faculty Income($)", "Percentage of Loan(%)", "Median Debt($)", "Proportion of First Generation(%)")
-    Value<-c(sub$Locale,round(sub$AdmRate*100,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
-             round(sub$Diversity,4), round(sub$FacultySalary,2), round(sub$PercentageofLoan*100,2), round(sub$Debt,2),round(sub$FirstGeneration*100,2))
+    Value<-c(sub$Locale,sub$School, round(sub$AdmRate*100,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
+             round(sub$Diversity,4), round(sub$FacultySalary,2), round(sub$PercentageOfLoan*100,2), round(sub$Debt,2),round(sub$FirstGeneration*100,2))
     data<-data.frame(cbind(Features, Value))
     data
   })
