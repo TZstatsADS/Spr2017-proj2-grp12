@@ -1,4 +1,4 @@
-packages.used=c("dplyr", "xlsx", "leaflet", "RColorBrewer", "scales", "lattice", "shiny","plotly", "ggplot2", "fmsb", "shinyjs")
+packages.used=c("dplyr", "xlsx", "leaflet", "RColorBrewer", "scales", "lattice", "shiny","plotly", "ggplot2", "fmsb", "shinyjs","plyr")
 
 # check packages that need to be installed.
 packages.needed=setdiff(packages.used, 
@@ -12,6 +12,7 @@ if(length(packages.needed)>0){
 # load packages
 library(dplyr)
 library(xlsx)
+library(plyr)
 
 # Data Loading
 
@@ -63,9 +64,11 @@ dataRecent <- dataOriginal %>%
     Other = Other/(White+Black+Asian+Hispanic+Other)
   )
 
-
-#set a newtable for data exploration.
-
+####################################################
+# for predictor analysis
+####################################################
+# set a newtable for data exploration.
+# transform data format
 newtable <- dataOriginal %>%
   select(
     UID = UNITID,
@@ -74,8 +77,8 @@ newtable <- dataOriginal %>%
     AdmRateGroup = adm_group,
     Cost = TUITIONFEE_OUT,
     TuitionIN = TUITIONFEE_IN,
-    ValueAddedbyRatio = value_added,
-    ValueAddedbyDifference = value_added_dif,
+    ValueAddedByRatio = value_added,
+    ValueAddedByDifference = value_added_dif,
     FamilyIncomeGroup = familyIncome_group,
     FirstGeneration = FIRST_GEN,
     Region = REGION,
@@ -85,14 +88,33 @@ newtable <- dataOriginal %>%
     FacultySalary = AVGFACSAL,
     Debt = DEBT_MDN,
     Urbanization = LOCALE,
-    PercentageofLoan = PCTFLOAN
+    PercentageOfLoan = PCTFLOAN,
+    FamilyIncome = MD_FAMINC
   )
-#it's dangerous to use index by specified constants
-nms <- names(newtable)[c(2,4,7:18)]
-first_ind <- c(1:(dim(newtable)[2]))[names(newtable)=="AdmRate"]
-#newtable[, c(4:13)] <- sapply(newtable[, c(4:13)], as.numeric)
-newtable[,c(first_ind:dim(newtable)[2])] <- newtable%>%select(AdmRate:PercentageofLoan)%>%mutate_if(is.character,as.numeric)
-newtable$ValueAddedbyRatio <- log(newtable$ValueAddedbyRatio)
+newtable$Locale<-newtable$Urbanization
+newtable$School <- newtable$SchoolType
+newtable$FamilyIncomeGroup <- factor(mapvalues(newtable$FamilyIncomeGroup, from=c(1, 2, 3), to=c("Low", "Median", "High")))
+newtable$AdmRateGroup <- factor(newtable$AdmRateGroup)
+newtable$SchoolType <- factor(newtable$SchoolType)
+newtable$Region <- factor(newtable$Region)
+newtable$Urbanization <- factor(newtable$Urbanization)
+
+# functions and variables for use
+nms <- c("Name","AdmRate","AdmRateGroup","ValueAddedByRatio","ValueAddedByDifference","FamilyIncomeGroup","FirstGeneration","Region","Diversity","Popularity","SchoolType","FacultySalary","Debt"     ,"Urbanization","PercentageOfLoan","FamilyIncome")
+adjR.square <- as.data.frame(list(adj.r.square = c(0.5871,0.6316,0.6625,0.6878,0.7042,0.7099,0.7152,0.7204,0.7214), predictor=nms[c(7:15)]))
+adjR.square$predictor <- factor(adjR.square$predictor,levels=adjR.square$predictor[order(adjR.square$adj.r.square)])
+number_ticks <- function(n) {function(limits) pretty(limits, n)}
+
+numeric_cols <- c("AdmRate","Cost","TuitionIN","ValueAddedByRatio","ValueAddedByDifference","FirstGeneration","Diversity","Popularity","FacultySalary","Debt","PercentageOfLoan","FamilyIncome")
+newtable[,numeric_cols] <- newtable%>%select_(.dots = numeric_cols)%>%mutate_if(is.character,as.numeric)
+newtable$ValueAddedByRatio <- log(newtable$ValueAddedByRatio)
+#########################################################
+# for predictor analysis 
+#########################################################
+
+
+
+
 # change name of majors for easier matching in shiny app filtering
 indexMajStart <- 20
 indexMajStop <- 55
@@ -112,7 +134,7 @@ adm_rate_th <- c(0.15,0.30,0.5)
 
 # Change the missing data to zero
 for (i in 1:nrow(newtable)){
-  newtable$ValueAddedbyRatio[i]<-ifelse(is.na(newtable$ValueAddedbyRatio[i]), 0, newtable$ValueAddedbyRatio[i])
+  newtable$ValueAddedByRatio[i]<-ifelse(is.na(newtable$ValueAddedByRatio[i]), 0, newtable$ValueAddedByRatio[i])
   newtable$Popularity[i]<-ifelse(is.na(newtable$Popularity[i])==T, 0, newtable$Popularity[i])
   newtable$Debt[i]<-ifelse(is.na(newtable$Debt[i])==T, 0, newtable$Debt[i])
 }
@@ -121,36 +143,14 @@ for (i in 1:nrow(newtable)){
 max_sel<-max(newtable$AdmRate)
 max_pop<-max(newtable$Popularity)
 max_deb<-max(newtable$Debt)
-max_val<-max(newtable$ValueAddedbyRatio)
+max_val<-max(newtable$ValueAddedByRatio)
 max_div<-max(newtable$Diversity)
 min_sel<-min(newtable$AdmRate)
 min_pop<-min(newtable$Popularity)
 min_deb<-min(newtable$Debt)
-min_val<-min(newtable$ValueAddedbyRatio)
+min_val<-min(newtable$ValueAddedByRatio)
 min_div<-min(newtable$Diversity)
 max_radar<- c(max_sel, max_pop, max_deb, max_val, max_div)
 min_radar<- c(min_sel, min_pop, min_deb, min_val, min_div)
 gender<-c("Gender")
 ethnicity<-c("Ethnicity")
-
-# Change the Locale int variable to char 
-loc<-function(l){
-  if (l==11||l==12||l==13||l==14){
-    return("City")
-  }
-  if (l==21||l==22||l==23||l==24){
-    return("Suburb")
-  }
-  if (l==31||l==32||l==33||l==34){
-    return("Town")
-  }
-  if (l==41||l==42||l==43||l==44){
-    return("Rural")
-  }
-  else{
-    return("Unknown")
-  }
-}
-for(i in 1:nrow(newtable)){
-  newtable$Locale[i]<-loc(newtable$Urbanization[i])
-}
