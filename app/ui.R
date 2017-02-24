@@ -37,7 +37,7 @@ navbarPage("Invest Your Education", id="nav",
                                      choices = c("",cities, universities), selected=""))
       ),
 
-      leafletOutput("map", width="100%", height = 565),
+      leafletOutput("map", width="100%", height = "80%"), #565
       
       useShinyjs(), 
       hidden( 

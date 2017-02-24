@@ -119,7 +119,7 @@ function(input, output, session) {
     
     leafletProxy("map", data = filteredData()) %>%
       clearShapes() %>%
-      addCircles(~Long, ~Lat, radius=750, layerId=~UID,
+      addCircles(~Long, ~Lat, radius=~RadiusPop, layerId=~UID,
         stroke=FALSE, fillOpacity=0.4)#, fillColor=pal(colorData)) %>%  (colors to do)
       #addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
       #  layerId="colorLegend")
@@ -220,8 +220,8 @@ function(input, output, session) {
       }
       # update map
       leafletProxy("map", data = filteredData()) %>% clearShapes() %>%
-      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=750, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
-      addCircles(~coords$Long, ~coords$Lat, radius=750, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
+      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=~RadiusPop, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
+      addCircles(~coords$Long, ~coords$Lat, radius=~RadiusPop, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
     }
     # if a university is selected
     else if ( input$zoom!="" && input$zoom %in% universities){
@@ -229,8 +229,8 @@ function(input, output, session) {
       anti_coords <- filteredData()[filteredData()$Name!=input$zoom,c(1,5,6)]
       leafletProxy("map", data = filteredData())  %>% 
       setView(lng=coords$Long, lat=coords$Lat, zoom=13) %>% clearShapes() %>%
-      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=750, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
-      addCircles(~coords$Long, ~coords$Lat, radius=750, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
+      addCircles(~anti_coords$Long, ~anti_coords$Lat, radius=~RadiusPop, layerId=~anti_coords$UID, stroke=FALSE, fillOpacity=0.4) %>%
+      addCircles(~coords$Long, ~coords$Lat, radius=~RadiusPop, layerId=coords$UID, stroke=FALSE, fillOpacity=0.4, color = "red")
     }
   })
 

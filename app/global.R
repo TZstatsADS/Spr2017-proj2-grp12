@@ -47,7 +47,8 @@ dataRecent <- dataOriginal %>%
     Asian = UGDS_ASIAN,
     Hispanic = UGDS_HISP,
     Other = OTHERS,
-    one_of(names(dataOriginal[1,29:65]))
+    one_of(names(dataOriginal[1,29:65])),
+    Popularity = popularity
   ) %>%
   mutate(
     AdmRate = as.numeric(AdmRate),
@@ -61,8 +62,10 @@ dataRecent <- dataOriginal %>%
     Black = Black/(White+Black+Asian+Hispanic+Other),
     Asian = Asian/(White+Black+Asian+Hispanic+Other),
     Hispanic = Hispanic/(White+Black+Asian+Hispanic+Other),
-    Other = Other/(White+Black+Asian+Hispanic+Other)
+    Other = Other/(White+Black+Asian+Hispanic+Other),
+    RadiusPop = (Popularity-mean(Popularity[Popularity<70000]))/sd(Popularity[Popularity<70000])*100+750
   )
+
 
 ####################################################
 # for predictor analysis
