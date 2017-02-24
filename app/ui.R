@@ -69,35 +69,24 @@ navbarPage("Invest Your Education", id="nav",
     )
   ),
   tabPanel("Data explorer",
-          
-        
+           fluidRow(
+             headerPanel("Predictor Analysis"),
+             sidebarPanel(
+               selectInput('color', 'Color', choices = nms[c(3,6,8,11,14)], selected = "FamilyIncomeGroup"),
+               selectInput('size', 'Size', choices = nms[c(2,7,9,10,12,13,15,16)], selected = "AdmRate"),
+               checkboxInput("regressionLine", label = "Regression Line", value = FALSE),
+               checkboxInput("referenceLine", label = "Reference Line", value = TRUE),
+               checkboxInput("comparison", label = "Compare two metrics", value = FALSE),
+               fluidRow(column(10, verbatimTextOutput("selection"))),
+               width = 3
+             ),
+             mainPanel(
+               plotlyOutput('scatterplot'))),
+           plotlyOutput('histogram'),
            
-    fluidRow(
-      headerPanel("Linear Regression Model"),
-      sidebarPanel(
-        #sliderInput('sampleSize', 'Sample Size', min = 1, max = nrow(diamonds),
-        #            value = 1000, step = 500, round = 0),
-        selectInput('x', 'X', choices = nms, selected = "Popularity"),
-        selectInput('y', 'Y', choices = nms, selected = "ValueAddedbyRatio"),
-        # selectInput('color', 'Color', choices = nms, selected = "clarity"),
-        # 
-        # selectInput('facet_row', 'Facet Row', c(None = '.', nms), selected = "clarity"),
-        # selectInput('facet_col', 'Facet Column', c(None = '.', nms)),
-        #sliderInput('plotHeight', 'Height of plot (in pixels)', 
-                    #min = 100, max = 2000, value = 1000)
-        helpText("Value_added= "),
-        helpText("Diversity= "),
-        helpText("Popularity= Number of Admitted Undergraduates/Admisson Rate "),
-        checkboxInput("checkbox", label = "Draw Axis", value = TRUE),
-        fluidRow(column(3, verbatimTextOutput("value")))
-        ),
-      
-      
-      mainPanel(
-        plotlyOutput('trendPlot', height = "900px"))),
-    
- 
-
-  conditionalPanel("false", icon("crosshair"))
+           
+           
+           
+           conditionalPanel("false", icon("crosshair"))
 )
 )
