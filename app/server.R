@@ -139,7 +139,7 @@ function(input, output, session) {
     Selectivity<-1-sub$AdmRate
     Popularity<-sub$Popularity
     Median_Debt<-sub$Debt
-    Value_added<-sub$ValueAddedbyRatio
+    Value_added<-sub$ValueAddedByRatio
     Diversity<-sub$Diversity
     true_radar<-c(Selectivity, Popularity, Median_Debt, Value_added, Diversity)
     radar<-as.data.frame(rbind(max_radar, min_radar, true_radar))
@@ -194,10 +194,10 @@ function(input, output, session) {
   
   output$table <- renderTable({
     sub<-newtable[newtable$Name==input$college,]
-    Features<-c("Locale of Institution","Admission Rate(%)", "In State Tuition($)", "Out of State Tuition($)", "Popularity", "Diversity",
+    Features<-c("Locale of Institution","School Type", "Admission Rate(%)", "In State Tuition($)", "Out of State Tuition($)", "Popularity", "Diversity",
                    "Average Faculty Income($)", "Percentage of Loan(%)", "Median Debt($)", "Proportion of First Generation(%)")
-    Value<-c(sub$Locale,round(sub$AdmRate*100,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
-             round(sub$Diversity,4), round(sub$FacultySalary,2), round(sub$PercentageofLoan*100,2), round(sub$Debt,2),round(sub$FirstGeneration*100,2))
+    Value<-c(sub$Locale,sub$School, round(sub$AdmRate*100,2),round(sub$TuitionIN,2),round(sub$Cost,2),round(sub$Popularity,2),
+             round(sub$Diversity,4), round(sub$FacultySalary,2), round(sub$PercentageOfLoan*100,2), round(sub$Debt,2),round(sub$FirstGeneration*100,2))
     data<-data.frame(cbind(Features, Value))
     data
   })
@@ -349,34 +349,74 @@ function(input, output, session) {
 # 
 #     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
 #   })
-  output$trendPlot <- renderPlotly({
-    
-    
-    if (input$checkbox==TRUE){
-      p<-ggplot(newtable, aes_string(x = input$x, y = input$y, color = newtable$AdmRate))+
-        #scale_x_continuous(trans='log10')+
-        #scale_y_continuous(trans='log10')+
-        geom_point(aes(text=paste("Uni:", newtable$Name)), size =1)+
-        geom_smooth(method = "lm", se = FALSE)+
-        geom_hline(yintercept=0)+
-        geom_vline(xintercept=0)
+  output$scatterplot <- renderPlotly({
+    s <- event_data("plotly_click")
+    if ((length(s))&(input$comparison==F)) {
+      pred <- s[["x"]]
+      d_name <- nms[c(7:15)][pred]
+      pres <- c(d_name,"ValueAddedByDifference")
+      
+      if ((pred %in% c(1,3,4,6,7,9))){
+        p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color, size =input$size)) + 
+          geom_point(aes(text=paste("University:", newtable$Name)),shape=1,alpha=0.95) +
+          scale_x_continuous(breaks=number_ticks(10)) +
+          scale_y_continuous(breaks=number_ticks(10)) +
+          scale_shape(solid = F) + theme(axis.text.x=element_text(angle = 15))
+        
+        if (input$regressionLine==T){
+          p <- p + geom_smooth(method = "lm",fullrange=TRUE,size=0.3,alpha=0.7)
+        }
+        
+      } else {
+        p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color)) + 
+          geom_boxplot() +
+          geom_point(aes(text=paste("University:", newtable$Name)),shape=95,alpha=0.5)+
+          theme(axis.text.x=element_text(angle = 15))
+      }
+      
+      
+    } else {
+      p <- ggplot(newtable, aes_string(x = "ValueAddedByRatio", y = "ValueAddedByDifference", color = input$color, size =input$size)) + 
+        geom_point(aes(text=paste("University:", newtable$Name)),shape=1,alpha=0.95) +
+        scale_x_continuous(breaks=number_ticks(10)) +
+        scale_y_continuous(breaks=number_ticks(10)) +
+        scale_shape(solid = F) + theme(axis.text.x=element_text(angle = 15))
+      
+      if (input$regressionLine==T){
+        p <- p + geom_smooth(method = "lm",fullrange=TRUE,size=0.3)
+      }
+      
+      
     }
-    # build graph with ggplot syntax
-    #fit <- lm(input$y ~ input$x, data=newtable)
-    else{p<-ggplot(newtable, aes_string(x = input$x, y = input$y, color = newtable$AdmRate))+
-      #scale_x_continuous(trans='log10')+
-      #scale_y_continuous(trans='log10')+
-    geom_point(aes(text=paste("Uni:", newtable$Name)), size =1)+
-    geom_smooth(method = "lm", se = FALSE)}
-    # if at least one facet column/row is specified, add it
-    # facets <- paste(input$facet_row, '~', input$facet_col)
-    # if (facets != '. ~ .') p <- p + facet_grid(facets)
-    # 
-    ggplotly(p) %>% 
-      layout(height = 500, width = 600, autosize=TRUE)
     
-    # 
+    
+    
+    if (input$referenceLine==T){
+      p <- p + geom_hline(yintercept=0,color='grey50')+
+        geom_vline(xintercept=0,color="grey50")
+    }
+    
+    
+    ggplotly(p)
   })
+  
+  
+  output$selection <- renderPrint({
+    s <- event_data("plotly_click")
+    # if (length(s)==0){
+    #   "Click on a bar in the barplot to explore association between value added and this predictor."
+    # } 
+    # # else {
+    # #   #cat("You selected: \n\n")
+    # #   as.list(s)
+    # # }
+  })
+  
+  output$histogram <- renderPlotly({
+    p <- ggplot(adjR.square, aes(x = predictor, y = adj.r.square)) +
+      theme_bw() + geom_bar(stat = "identity",alpha=0.5,fill = "aquamarine3")
+  })
+
   
   }
 
