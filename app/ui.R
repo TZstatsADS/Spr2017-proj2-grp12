@@ -72,7 +72,7 @@ navbarPage("Invest Your Education", id="nav",
            fluidRow(
              headerPanel("Predictor Analysis"),
              sidebarPanel(
-               selectInput('color', 'Color', choices = nms[c(3,6,8,11,14)], selected = "FamilyIncomeGroup"),
+               selectInput('color', 'Color', choices = c(nms[c(3,6,8,11,14)],"None"), selected = "FamilyIncomeGroup"),
                selectInput('size', 'Size', choices = nms[c(2,7,9,10,12,13,15,16)], selected = "AdmRate"),
                checkboxInput("regressionLine", label = "Regression Line", value = FALSE),
                checkboxInput("referenceLine", label = "Reference Line", value = TRUE),

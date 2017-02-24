@@ -357,7 +357,13 @@ function(input, output, session) {
       pres <- c(d_name,"ValueAddedByDifference")
       
       if ((pred %in% c(1,3,4,6,7,9))){
-        p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color, size =input$size)) + 
+        if (input$color=="None"){
+          p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], size =input$size))
+        } else {
+          p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color, size =input$size))
+        }
+        
+        p <- p + 
           geom_point(aes(text=paste("University:", newtable$Name)),shape=1,alpha=0.95) +
           scale_x_continuous(breaks=number_ticks(10)) +
           scale_y_continuous(breaks=number_ticks(10)) +
@@ -368,7 +374,12 @@ function(input, output, session) {
         }
         
       } else {
-        p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color)) + 
+        if (input$color=="None"){
+          p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2]))
+        } else {
+          p <- ggplot(newtable, aes_string(x = pres[1], y = pres[2], color = input$color)) 
+        }
+        p <- p + 
           geom_boxplot() +
           geom_point(aes(text=paste("University:", newtable$Name)),shape=95,alpha=0.5)+
           theme(axis.text.x=element_text(angle = 15))
@@ -376,7 +387,12 @@ function(input, output, session) {
       
       
     } else {
-      p <- ggplot(newtable, aes_string(x = "ValueAddedByRatio", y = "ValueAddedByDifference", color = input$color, size =input$size)) + 
+      if (input$color=="None"){
+        p <- ggplot(newtable, aes_string(x = "ValueAddedByRatio", y = "ValueAddedByDifference", size =input$size))
+      } else {
+        p <- ggplot(newtable, aes_string(x = "ValueAddedByRatio", y = "ValueAddedByDifference", color = input$color, size =input$size))
+      }
+      p <- p + 
         geom_point(aes(text=paste("University:", newtable$Name)),shape=1,alpha=0.95) +
         scale_x_continuous(breaks=number_ticks(10)) +
         scale_y_continuous(breaks=number_ticks(10)) +
